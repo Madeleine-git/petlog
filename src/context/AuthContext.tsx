@@ -1,3 +1,4 @@
+// eslint-disable-next-line react-refresh/only-export-components
 import { createContext, useContext, useState, useCallback } from 'react'
 import type { User } from '../types/pet.types'
 
@@ -38,4 +39,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   )
 }
 
-export const AuthContext = createContext<AuthContextType | null>(null)
+// eslint-disable-next-line react-refresh/only-export-components
+export function useAuthContext() {
+  const context = useContext(AuthContext)
+  if (!context) {
+    throw new Error('useAuthContext debe usarse dentro de AuthProvider')
+  }
+  return context
+}
