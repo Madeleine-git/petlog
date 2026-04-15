@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom'
 import { useAuthContext } from '../context/AuthContext'
 import Input from '../components/shared/Input'
 import Button from '../components/shared/Button'
+import { validateLogin, validateRegister } from '../utils/validators'
+import type { ValidationErrors } from '../utils/validators'
 
 export default function LoginPage() {
   const { login } = useAuthContext()
@@ -12,16 +14,29 @@ export default function LoginPage() {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [errors, setErrors] = useState<ValidationErrors>({})
   const [loading, setLoading] = useState(false)
+  const [success, setSuccess] = useState('')
 
   const handleSubmit = () => {
+    const validationErrors = isRegister
+      ? validateRegister(name, email, password)
+      : validateLogin(email, password)
+
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors)
+      return
+    }
+
+    setErrors({})
     setLoading(true)
+
     setTimeout(() => {
-      login(
-        { id: '1', name: name || 'Usuario', email },
-        'mock-jwt-token'
-      )
-      navigate('/dashboard')
+      setSuccess(isRegister ? '¡Cuenta creada correctamente!' : '¡Bienvenido de nuevo!')
+      setTimeout(() => {
+        login({ id: '1', name: name || 'Usuario', email }, 'mock-jwt-token')
+        navigate('/dashboard')
+      }, 800)
       setLoading(false)
     }, 800)
   }
@@ -37,6 +52,12 @@ export default function LoginPage() {
           </p>
         </div>
 
+        {success && (
+          <div className="bg-green-50 border border-green-200 text-green-700 text-sm rounded-lg px-4 py-2 mb-4 text-center">
+            {success}
+          </div>
+        )}
+
         <div className="flex flex-col gap-4">
           {isRegister && (
             <Input
@@ -45,6 +66,7 @@ export default function LoginPage() {
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Tu nombre"
+              error={errors.name}
             />
           )}
           <Input
@@ -54,6 +76,7 @@ export default function LoginPage() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="tu@email.com"
+            error={errors.email}
           />
           <Input
             label="Contraseña"
@@ -62,6 +85,7 @@ export default function LoginPage() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="••••••••"
+            error={errors.password}
           />
           <Button
             label={isRegister ? 'Registrarse' : 'Iniciar sesión'}
@@ -76,7 +100,11 @@ export default function LoginPage() {
           {isRegister ? '¿Ya tienes cuenta?' : '¿No tienes cuenta?'}{' '}
           <button
             className="text-teal-600 font-medium hover:underline"
-            onClick={() => setIsRegister(!isRegister)}
+            onClick={() => {
+              setIsRegister(!isRegister)
+              setErrors({})
+              setSuccess('')
+            }}
           >
             {isRegister ? 'Inicia sesión' : 'Regístrate'}
           </button>
