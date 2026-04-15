@@ -1,6 +1,6 @@
 # 🐾 PetLog — Diario Digital de Mascotas
 
-> Microapp fullstack desarrollada como proyecto del ciclo ASIR. Permite a los dueños de mascotas llevar un registro digital organizado de sus animales: vacunas, visitas al veterinario y recordatorios, todo desde una sola aplicación web con autenticación segura.
+> Microapp fullstack, permite a los dueños de mascotas llevar un registro digital organizado de sus animales: vacunas, visitas al veterinario y recordatorios, todo desde una sola aplicación web con autenticación segura.
 
 ---
 
@@ -20,13 +20,11 @@ Dueños de mascotas domésticas (perros, gatos, conejos…) que quieren tener un
 
 ## ✅ Funcionalidades principales
 
-| Funcionalidad | Descripción |
-|---|---|
-| 🔐 Autenticación segura | Registro y login con email/contraseña. Contraseñas cifradas con bcrypt. Token JWT para identificación segura en cada petición. |
-| 🐶 Perfil de mascota | Nombre, especie, raza, fecha de nacimiento y foto (URL). Soporte para múltiples mascotas por usuario con dashboard para cambiar entre perfiles. |
-| 💉 Historial de vacunas | Registro de vacunas administradas con fecha, próximas dosis pendientes y alertas visuales. |
-| 🏥 Visitas veterinarias | Registro de cada visita con diagnóstico, medicación recetada y notas de seguimiento. |
-| 🔔 Recordatorios | Avisos de próximas citas veterinarias, medicación periódica y vacunas pendientes. |
+🔐 Autenticación segura: Registro y login con email/contraseña. Contraseñas cifradas con bcrypt. Token JWT para identificación segura en cada petición. 
+🐶 Perfil de mascota: Nombre, especie, raza, fecha de nacimiento y foto (URL). Soporte para múltiples mascotas por usuario con dashboard para cambiar entre perfiles. 
+💉 Historial de vacunas: Registro de vacunas administradas con fecha, próximas dosis pendientes y alertas visuales. 
+🏥 Visitas veterinarias : Registro de cada visita con diagnóstico, medicación recetada y notas de seguimiento.
+🔔 Recordatorios: Avisos de próximas citas veterinarias, medicación periódica y vacunas pendientes.
 
 ---
 
@@ -87,7 +85,7 @@ Usuario → Página React → api/pets.ts (Axios + JWT)
 
 ---
 
-## 🔐 Seguridad e identificación
+## 🔐 Seguridad
 
 ### Autenticación
 - Contraseñas cifradas con **bcrypt** (nunca se guarda la contraseña en texto plano).
@@ -136,11 +134,34 @@ Usuario → Página React → api/pets.ts (Axios + JWT)
 | Monorepo | npm workspaces |
 
 ---
-## 📋 Gestión del proyecto
 
-- **Repositorio GitHub:** https://github.com/Madeleine-git/petlog
-- **Tablero Trello:** https://trello.com/b/AmrTLslC/petlog
-- **Documentación:** [docs/project-management.md](docs/project-management.md)
+## 🐙 Crear el repositorio en GitHub
 
-## 📄 Licencia
-MIT License
+### 1. Crear el repositorio desde la web
+
+1. Inicia sesión en [github.com](https://github.com).
+2. Haz clic en **"New repository"** (botón verde, arriba a la derecha).
+3. Rellena los campos:
+   - **Repository name:** `petlog`
+   - **Description:** `Diario digital de mascotas`
+   - **Visibility:** Public
+   - Marca **"Add a README file"**
+   - Marca **"Add .gitignore"** y selecciona `Node`
+   - Marca **"Choose a license"** y selecciona `MIT`
+4. Haz clic en **"Create repository"**.
+
+### 2. Clonar el repositorio en tu equipo
+
+```bash
+git clone https://github.com/Madeleine-git/petlog.git
+cd petlog
+```
+### 3. Estructura de ramas recomendada
+
+| Rama | Uso |
+|---|---|
+| `main` | Código estable, listo para entregar |
+| `feature/auth` | Implementación del login y JWT |
+| `feature/pets` | Módulo de mascotas |
+
+---
