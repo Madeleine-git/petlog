@@ -1,151 +1,195 @@
 # 🐾 PetLog — Diario Digital de Mascotas
 
-> Microapp fullstack desarrollada como proyecto del ciclo ASIR. Permite a los dueños de mascotas llevar un registro digital organizado de sus animales: vacunas, visitas al veterinario y recordatorios, todo desde una sola aplicación web con autenticación segura.
+Aplicación web fullstack para el registro y seguimiento de mascotas. Desarrollada como proyecto del ciclo ASIR, permite a los usuarios gestionar el historial médico de sus animales — vacunas, visitas veterinarias y recordatorios — desde cualquier dispositivo, con autenticación segura.
+
+**Frontend:** https://petlog-sepia.vercel.app
+**API:** https://petlog-api-173h.onrender.com
 
 ---
 
-## 🧩 Problema que resuelve
+## El problema
 
-Los dueños de mascotas tienen dificultades para llevar un registro organizado de la salud y el cuidado de sus animales. La información queda dispersa en notas de papel, fotos del móvil o simplemente en la memoria.
+Los dueños de mascotas no tienen una forma sencilla de centralizar la información de salud de sus animales. La información queda dispersa entre notas de papel, fotos del móvil y la memoria, lo que dificulta el seguimiento correcto de vacunas, medicaciones y citas veterinarias.
 
-**PetLog** centraliza toda esa información en una sola aplicación web, accesible desde cualquier dispositivo, con autenticación segura por usuario.
-
----
-
-## 👤 Usuario objetivo
-
-Dueños de mascotas domésticas (perros, gatos, conejos…) que quieren tener un historial digital organizado y accesible. También puede ser útil para cuidadores que gestionan varios animales a la vez.
+PetLog resuelve esto ofreciendo un registro digital organizado, accesible desde cualquier dispositivo y protegido por autenticación de usuario.
 
 ---
 
-## ✅ Funcionalidades principales
+## Funcionalidades
 
-| Funcionalidad | Descripción |
+| Módulo | Descripción |
 |---|---|
-| 🔐 Autenticación segura | Registro y login con email/contraseña. Contraseñas cifradas con bcrypt. Token JWT para identificación segura en cada petición. |
-| 🐶 Perfil de mascota | Nombre, especie, raza, fecha de nacimiento y foto (URL). Soporte para múltiples mascotas por usuario con dashboard para cambiar entre perfiles. |
-| 💉 Historial de vacunas | Registro de vacunas administradas con fecha, próximas dosis pendientes y alertas visuales. |
-| 🏥 Visitas veterinarias | Registro de cada visita con diagnóstico, medicación recetada y notas de seguimiento. |
-| 🔔 Recordatorios | Avisos de próximas citas veterinarias, medicación periódica y vacunas pendientes. |
+| Autenticación | Registro y login con email y contraseña. JWT en memoria del cliente, bcrypt en el servidor. |
+| Mascotas | Crear y gestionar múltiples perfiles de mascota por usuario. |
+| Vacunas | Registrar vacunas con fecha administrada y próxima dosis. Estado visual al día / pendiente. |
+| Visitas veterinarias | Historial de visitas con diagnóstico, medicación y notas. |
+| Recordatorios | Avisos de citas, medicación periódica y vacunas pendientes. |
 
 ---
 
-## ⭐ Funcionalidades opcionales
+## Stack tecnológico
 
-- **Múltiples mascotas por usuario** — dashboard principal para cambiar entre los perfiles de diferentes animales.
+| Capa | Tecnología |
+|---|---|
+| Frontend | React 18 + TypeScript + Tailwind CSS |
+| Routing | React Router v6 |
+| Estado global | Context API + custom hooks |
+| Cliente HTTP | Axios con interceptores JWT |
+| Backend | Node.js + Express |
+| Autenticación | JWT + bcrypt |
+| Seguridad | Helmet.js + CORS |
+| Persistencia | Datos en memoria (Repository Pattern) |
+| Despliegue frontend | Vercel |
+| Despliegue backend | Render |
 
 ---
 
-## 🚀 Mejoras futuras
+## Arquitectura
 
-- **Base de datos real** — migrar de datos en memoria a PostgreSQL o MongoDB sin cambiar la capa de servicios, gracias al Repository Pattern.
-- **Notificaciones push** — recordatorios en tiempo real mediante Service Workers.
-- **App móvil** — React Native reutilizando la lógica de negocio ya tipada.
-- **Exportar historial en PDF** — informe médico completo para llevar al veterinario.
-- **OAuth social** — login con Google.
-
----
-
-## 🏗️ Arquitectura
-
-El proyecto es un monorepo con frontend y backend separados, organizados en capas.
+El proyecto es un monorepo con frontend y backend en el mismo repositorio, organizados en capas.
 
 ```
 petlog/
-├── client/                        # Frontend
-│   └── src/
-│       ├── pages/                 # Vistas: Login, Dashboard, PetProfile
-│       ├── components/            # Componentes reutilizables
-│       ├── hooks/                 # Custom hooks (usePets, useAuth)
-│       ├── api/                   # Cliente HTTP tipado con Axios
-│       │   ├── client.ts          # Instancia Axios con token JWT
-│       │   ├── auth.api.ts        # Endpoints de autenticación
-│       │   └── pets.api.ts        # Endpoints de mascotas
-│       ├── context/               # AuthContext — estado global del usuario
-│       └── types/                 # Tipos TypeScript compartidos (Pet, Vaccine…)
+├── src/                           # Frontend React
+│   ├── api/                       # Cliente HTTP tipado con Axios
+│   │   ├── client.ts              # Instancia Axios + interceptor JWT
+│   │   ├── auth.api.ts            # Funciones tipadas de autenticación
+│   │   └── pets.api.ts            # Funciones tipadas de mascotas
+│   ├── components/                # Componentes reutilizables y por módulo
+│   ├── context/                   # AuthContext — estado global de sesión
+│   ├── hooks/                     # usePets, usePetDetail, useAuth
+│   ├── pages/                     # LoginPage, DashboardPage, PetProfilePage
+│   └── types/                     # Interfaces TypeScript compartidas
 │
-└── server/                        # Backend
+└── server/                        # Backend Express
     └── src/
-        ├── routes/                # Capa de rutas — recibe las peticiones HTTP
-        │   ├── auth.routes.ts
-        │   └── pets.routes.ts
-        ├── middleware/            # authMiddleware — verifica el JWT en cada ruta
+        ├── routes/                # Capa de rutas
+        ├── controllers/           # Capa de controladores
         ├── services/              # Capa de servicios — lógica de negocio
-        │   ├── auth.service.ts
-        │   └── pet.service.ts
-        └── repositories/          # Capa de datos — acceso a los datos
-            └── memory.repository.ts   # Datos en memoria + datos de ejemplo
+        ├── repositories/          # Capa de datos — Repository Pattern
+        ├── middleware/            # authMiddleware — verificación JWT
+        └── config/                # Configuración JWT
 ```
 
 ### Flujo de una petición
 
 ```
-Usuario → Página React → api/pets.ts (Axios + JWT)
-        → Express Router → authMiddleware (verifica token)
-        → Service (lógica) → Repository (datos en memoria)
+Usuario → React Page → API Client (Axios + JWT)
+        → Express Router → authMiddleware
+        → Controller → Service → Repository
+        → Respuesta JSON → useState → re-render
 ```
 
 ---
 
-## 🔐 Seguridad e identificación
+## Seguridad
 
-### Autenticación
-- Contraseñas cifradas con **bcrypt** (nunca se guarda la contraseña en texto plano).
-- Al hacer login, el servidor genera un **JWT** firmado con una clave secreta (`JWT_SECRET`) que incluye el `userId` en el payload.
-
-### Identificación segura en cada petición
-- El token JWT se guarda en **memoria del cliente** (variable de React en `AuthContext`), no en LocalStorage ni en cookies, para reducir el riesgo de ataques XSS.
-- En cada petición al backend, Axios añade automáticamente la cabecera `Authorization: Bearer <token>`.
-- El `authMiddleware` de Express verifica la firma del token en cada ruta protegida. Si el token es inválido o ha expirado, devuelve `401 Unauthorized`.
-
-### Otras medidas
-- **Helmet.js** para cabeceras HTTP seguras.
-- **CORS** configurado para aceptar solo peticiones del frontend.
+- Contraseñas cifradas con bcrypt — nunca se almacenan en texto plano.
+- Autenticación mediante JWT firmado con clave secreta en el servidor.
+- Token guardado en memoria del cliente (AuthContext), no en LocalStorage, para evitar ataques XSS.
+- authMiddleware protege todas las rutas privadas — devuelve 401 si el token es inválido o ha expirado.
+- Helmet.js para cabeceras HTTP seguras.
+- CORS configurado para aceptar solo peticiones del frontend en producción.
 
 ---
 
-## 📡 Endpoints de la API
+## API REST
 
-| Método | Ruta | Descripción | Auth |
+| Método | Ruta | Auth | Descripción |
 |---|---|---|---|
-| POST | `/api/auth/register` | Registrar nuevo usuario | No |
-| POST | `/api/auth/login` | Iniciar sesión, devuelve JWT | No |
-| GET | `/api/pets` | Listar mascotas del usuario | JWT |
-| POST | `/api/pets` | Crear nueva mascota | JWT |
-| GET | `/api/pets/:id` | Obtener mascota por ID | JWT |
-| PUT | `/api/pets/:id` | Actualizar datos de la mascota | JWT |
-| DELETE | `/api/pets/:id` | Eliminar mascota | JWT |
-| GET | `/api/pets/:id/vaccines` | Historial de vacunas | JWT |
-| POST | `/api/pets/:id/vaccines` | Añadir vacuna | JWT |
-| GET | `/api/pets/:id/visits` | Historial de visitas veterinarias | JWT |
-| POST | `/api/pets/:id/visits` | Registrar visita veterinaria | JWT |
-| GET | `/api/pets/:id/reminders` | Listar recordatorios | JWT |
-| POST | `/api/pets/:id/reminders` | Crear recordatorio | JWT |
+| POST | /api/auth/register | No | Registrar usuario |
+| POST | /api/auth/login | No | Iniciar sesión |
+| GET | /api/pets | JWT | Listar mascotas |
+| POST | /api/pets | JWT | Crear mascota |
+| GET | /api/pets/:id | JWT | Obtener mascota |
+| PUT | /api/pets/:id | JWT | Actualizar mascota |
+| DELETE | /api/pets/:id | JWT | Eliminar mascota |
+| GET | /api/pets/:id/vaccines | JWT | Historial de vacunas |
+| POST | /api/pets/:id/vaccines | JWT | Añadir vacuna |
+| GET | /api/pets/:id/visits | JWT | Historial de visitas |
+| POST | /api/pets/:id/visits | JWT | Registrar visita |
+| GET | /api/pets/:id/reminders | JWT | Listar recordatorios |
+| POST | /api/pets/:id/reminders | JWT | Crear recordatorio |
+
+Documentación completa con ejemplos de request/response en docs/api.md.
 
 ---
 
-## 🛠️ Stack tecnológico
+## Instalación local
 
-| Parte | Tecnología |
+### Requisitos
+- Node.js 18+
+- npm
+
+### Frontend
+
+```bash
+git clone https://github.com/Madeleine-git/petlog.git
+cd petlog
+npm install
+npm run dev
+```
+
+### Backend
+
+```bash
+cd server
+npm install
+npm run dev
+```
+
+### Variables de entorno
+
+Crea un fichero .env en la raíz del proyecto:
+
+```
+VITE_API_URL=http://localhost:4000/api
+```
+
+Crea un fichero .env en server/:
+
+```
+JWT_SECRET=tu_clave_secreta
+NODE_ENV=development
+```
+
+---
+
+## Documentación
+
+| Documento | Descripción |
 |---|---|
-| Frontend | React 18 + TypeScript + Tailwind CSS |
-| Cliente HTTP | Axios (tipado con TypeScript) |
-| Backend | Express.js (Node.js) |
-| Autenticación | JWT + bcrypt |
-| Persistencia | Datos en memoria (servidor) + LocalStorage (cliente) |
-| Monorepo | npm workspaces |
+| docs/design.md | Arquitectura y decisiones técnicas |
+| docs/api.md | Endpoints REST con ejemplos |
+| docs/api-client.md | Capa de red y tipos TypeScript |
+| docs/components.md | Componentes React documentados |
+| docs/hooks.md | Custom hooks |
+| docs/context.md | Context API |
+| docs/routing.md | Rutas y navegación |
+| docs/forms.md | Formularios y validación |
+| docs/testing.md | Pruebas manuales |
+| docs/deployment.md | Proceso de despliegue |
+| docs/retrospective.md | Reflexión final |
 
 ---
-## 📋 Gestión del proyecto
 
-- **Repositorio GitHub:** https://github.com/Madeleine-git/petlog
-- **Tablero Trello:** https://trello.com/b/AmrTLslC/petlog
-- **Documentación:** [docs/project-management.md](docs/project-management.md)
+## Gestión del proyecto
 
-## 🌐 URLs del proyecto
+- Tablero Trello: https://trello.com/b/AmrTLslC/petlog
+- Documentación de gestión: docs/project-management.md
 
-- **Frontend:** https://petlog-sepia.vercel.app
-- **API:** https://petlog-api-173h.onrender.com/api/health
+---
 
-## 📄 Licencia
-MIT License
+## Mejoras futuras
+
+- Base de datos real (PostgreSQL o MongoDB) — el Repository Pattern permite la migración sin tocar la capa de servicios.
+- Notificaciones push mediante Service Workers.
+- App móvil con React Native reutilizando la lógica de negocio tipada.
+- Exportar historial médico en PDF.
+- Login con Google (OAuth).
+
+---
+
+## Licencia
+
+MIT © 2026
