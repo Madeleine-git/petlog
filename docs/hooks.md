@@ -130,3 +130,33 @@ Carga el detalle completo de una mascota: vacunas, visitas y recordatorios.
 ```ts
 const { vaccines, visits, reminders, pendingReminders } = usePetDetail(petId)
 ```
+
+---
+
+### useForm — `src/hooks/useForm.ts`
+
+Custom hook genérico para gestionar cualquier formulario de la app. Centraliza los valores, los errores y el estado de envío.
+
+**Parámetros:**
+| Parámetro | Tipo | Descripción |
+|---|---|---|
+| `initialValues` | `T extends Record<string, string>` | Valores iniciales del formulario |
+| `validate` | `(values: T) => FormErrors` | Función de validación opcional |
+
+**Devuelve:**
+| Valor | Tipo | Descripción |
+|---|---|---|
+| `values` | `T` | Valores actuales del formulario |
+| `errors` | `FormErrors` | Errores de validación por campo |
+| `isSubmitting` | `boolean` | true mientras se procesa el envío |
+| `handleChange` | `(e) => void` | Manejador de cambios en inputs y selects |
+| `handleSubmit` | `(onSubmit) => Promise<void>` | Valida y ejecuta el envío |
+| `reset` | `() => void` | Resetea valores y errores |
+
+**Uso:**
+```ts
+const { values, errors, isSubmitting, handleChange, handleSubmit, reset } = useForm(
+  { name: '', email: '', password: '' },
+  (values) => validateRegister(values.name, values.email, values.password)
+)
+```
