@@ -5,10 +5,15 @@ import authRoutes from './routes/auth.routes'
 import petsRoutes from './routes/pets.routes'
 
 const app = express()
-const PORT = 4000
+const PORT = process.env.PORT || 4000
 
 app.use(helmet())
-app.use(cors({ origin: 'http://localhost:5173' }))
+app.use(cors({
+  origin: [
+    'http://localhost:5173',
+    /\.vercel\.app$/
+  ]
+}))
 app.use(express.json())
 
 app.use('/api/auth', authRoutes)
