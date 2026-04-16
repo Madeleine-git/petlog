@@ -142,5 +142,10 @@ Usuario → Página React → api/pets.ts (Axios + JWT)
 - **Tablero Trello:** https://trello.com/b/AmrTLslC/petlog
 - **Documentación:** [docs/project-management.md](docs/project-management.md)
 
+## 🌐 URLs del proyecto
+
+- **Frontend:** https://petlog-sepia.vercel.app
+- **API:** https://petlog-api-173h.onrender.com/api/health
+
 ## 📄 Licencia
 MIT License
