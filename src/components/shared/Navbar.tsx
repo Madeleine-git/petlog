@@ -11,18 +11,18 @@ export default function Navbar() {
   }
 
   return (
-    <nav className="bg-white border-b border-gray-200 px-6 py-3 flex justify-between items-center">
+    <nav className="bg-amber-900 px-6 py-3 flex justify-between items-center">
       <div className="flex items-center gap-2">
         <span className="text-2xl">🐾</span>
-        <span className="font-semibold text-teal-700 text-lg">PetLog</span>
+        <span className="font-semibold text-amber-100 text-lg">PetLog</span>
       </div>
       <div className="flex items-center gap-4">
-        <span className="text-sm text-gray-600">
-          Hola, <span className="font-medium">{user?.name}</span>
+        <span className="text-sm text-amber-200">
+          Hola, <span className="font-medium text-white">{user?.name}</span>
         </span>
         <button
           onClick={handleLogout}
-          className="text-sm text-red-500 hover:text-red-700 font-medium transition-colors"
+          className="text-sm text-amber-300 hover:text-white font-medium transition-colors"
         >
           Cerrar sesión
         </button>

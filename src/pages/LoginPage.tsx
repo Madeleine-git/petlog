@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuthContext } from '../context/AuthContext'
 import Input from '../components/shared/Input'
-import Button from '../components/shared/Button'
 import { validateLogin, validateRegister } from '../utils/validators'
 import type { ValidationErrors } from '../utils/validators'
 import { authApi } from '../api/auth.api'
@@ -50,12 +49,12 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-teal-50 flex items-center justify-center">
+    <div className="min-h-screen bg-amber-50 flex items-center justify-center">
       <div className="bg-white rounded-2xl shadow-md p-8 w-full max-w-sm">
         <div className="flex flex-col items-center mb-6">
           <span className="text-5xl mb-2">🐾</span>
-          <h1 className="text-2xl font-bold text-teal-700">PetLog</h1>
-          <p className="text-sm text-gray-400 mt-1">
+          <h1 className="text-2xl font-bold text-amber-900">PetLog</h1>
+          <p className="text-sm text-amber-700 mt-1">
             {isRegister ? 'Crea tu cuenta' : 'Inicia sesión'}
           </p>
         </div>
@@ -101,19 +100,19 @@ export default function LoginPage() {
             placeholder="••••••••"
             error={errors.password}
           />
-          <Button
-            label={isRegister ? 'Registrarse' : 'Iniciar sesión'}
-            type="submit"
-            variant="primary"
-            loading={loading}
+          <button
             onClick={handleSubmit}
-          />
+            disabled={loading}
+            className="w-full py-2 rounded-lg font-medium text-sm bg-amber-700 text-white hover:bg-amber-800 transition-colors disabled:opacity-50"
+          >
+            {loading ? 'Cargando...' : isRegister ? 'Registrarse' : 'Iniciar sesión'}
+          </button>
         </div>
 
         <p className="text-center text-sm text-gray-400 mt-4">
           {isRegister ? '¿Ya tienes cuenta?' : '¿No tienes cuenta?'}{' '}
           <button
-            className="text-teal-600 font-medium hover:underline"
+            className="text-amber-700 font-medium hover:underline"
             onClick={() => {
               setIsRegister(!isRegister)
               setErrors({})
