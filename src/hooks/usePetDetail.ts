@@ -1,34 +1,32 @@
 import { useState, useEffect, useCallback, useMemo } from 'react'
-import type { Vaccine, Visit, Reminder } from '../types/pet.types'
-
-const MOCK_VACCINES: Vaccine[] = [
-  { id: '1', petId: '1', name: 'Rabia', date: '2025-01-10', nextDate: '2026-01-10' },
-  { id: '2', petId: '1', name: 'Moquillo', date: '2025-03-15', nextDate: '2026-03-15' },
-]
-
-const MOCK_VISITS: Visit[] = [
-  { id: '1', petId: '1', date: '2025-02-20', diagnosis: 'Revisión anual', medication: 'Antiparasitario', notes: 'Todo en orden' },
-]
-
-const MOCK_REMINDERS: Reminder[] = [
-  { id: '1', petId: '1', title: 'Vacuna anual', date: '2026-01-10', type: 'vaccine' },
-  { id: '2', petId: '1', title: 'Revisión veterinario', date: '2025-06-20', type: 'appointment' },
-]
+import type { Vaccine, Visit, Reminder, CreateVaccineDto, CreateVisitDto, CreateReminderDto } from '../types/pet.types'
+import { petsApi } from '../api/pets.api'
 
 export function usePetDetail(petId: string) {
   const [vaccines, setVaccines] = useState<Vaccine[]>([])
   const [visits, setVisits] = useState<Visit[]>([])
   const [reminders, setReminders] = useState<Reminder[]>([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setVaccines(MOCK_VACCINES.filter(v => v.petId === petId))
-      setVisits(MOCK_VISITS.filter(v => v.petId === petId))
-      setReminders(MOCK_REMINDERS.filter(r => r.petId === petId))
-      setLoading(false)
-    }, 500)
-    return () => clearTimeout(timer)
+    const fetchData = async () => {
+      try {
+        const [vaccinesData, visitsData, remindersData] = await Promise.all([
+          petsApi.getVaccines(petId),
+          petsApi.getVisits(petId),
+          petsApi.getReminders(petId),
+        ])
+        setVaccines(vaccinesData)
+        setVisits(visitsData)
+        setReminders(remindersData)
+      } catch (err) {
+        setError((err as Error).message)
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchData()
   }, [petId])
 
   const pendingReminders = useMemo(
@@ -36,17 +34,32 @@ export function usePetDetail(petId: string) {
     [reminders]
   )
 
-  const addVaccine = useCallback((vaccine: Vaccine) => {
-    setVaccines(prev => [...prev, vaccine])
-  }, [])
+  const addVaccine = useCallback(async (data: CreateVaccineDto) => {
+    try {
+      const vaccine = await petsApi.addVaccine(petId, data)
+      setVaccines(prev => [...prev, vaccine])
+    } catch (err) {
+      setError((err as Error).message)
+    }
+  }, [petId])
 
-  const addVisit = useCallback((visit: Visit) => {
-    setVisits(prev => [...prev, visit])
-  }, [])
+  const addVisit = useCallback(async (data: CreateVisitDto) => {
+    try {
+      const visit = await petsApi.addVisit(petId, data)
+      setVisits(prev => [...prev, visit])
+    } catch (err) {
+      setError((err as Error).message)
+    }
+  }, [petId])
 
-  const addReminder = useCallback((reminder: Reminder) => {
-    setReminders(prev => [...prev, reminder])
-  }, [])
+  const addReminder = useCallback(async (data: CreateReminderDto) => {
+    try {
+      const reminder = await petsApi.addReminder(petId, data)
+      setReminders(prev => [...prev, reminder])
+    } catch (err) {
+      setError((err as Error).message)
+    }
+  }, [petId])
 
   return {
     vaccines,
@@ -54,6 +67,7 @@ export function usePetDetail(petId: string) {
     reminders,
     pendingReminders,
     loading,
+    error,
     addVaccine,
     addVisit,
     addReminder,

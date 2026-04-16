@@ -1,6 +1,7 @@
 // eslint-disable-next-line react-refresh/only-export-components
 import { createContext, useContext, useState, useCallback } from 'react'
 import type { User } from '../types/pet.types'
+import { setToken } from '../api/client'
 
 interface AuthContextType {
   user: User | null
@@ -14,15 +15,17 @@ const AuthContext = createContext<AuthContextType | null>(null)
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
-  const [token, setToken] = useState<string | null>(null)
+  const [token, setTokenState] = useState<string | null>(null)
 
   const login = useCallback((user: User, token: string) => {
     setUser(user)
+    setTokenState(token)
     setToken(token)
   }, [])
 
   const logout = useCallback(() => {
     setUser(null)
+    setTokenState(null)
     setToken(null)
   }, [])
 

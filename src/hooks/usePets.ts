@@ -1,57 +1,50 @@
 import { useState, useEffect, useCallback, useMemo } from 'react'
 import type { Pet, CreatePetDto } from '../types/pet.types'
-
-const MOCK_PETS: Pet[] = [
-  {
-    id: '1',
-    userId: '1',
-    name: 'Coco',
-    species: 'Perro',
-    breed: 'Perro de Agua',
-    birthDate: '2023-09-14',
-    photoUrl: '',
-  },
-  {
-    id: '2',
-    userId: '1',
-    name: 'Michi',
-    species: 'Gato',
-    breed: 'Siamés',
-    birthDate: '2019-07-22',
-    photoUrl: '',
-  },
-]
+import { petsApi } from '../api/pets.api'
 
 export function usePets() {
   const [pets, setPets] = useState<Pet[]>([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setPets(MOCK_PETS)
-      setLoading(false)
-    }, 500)
-    return () => clearTimeout(timer)
+    const fetchPets = async () => {
+      try {
+        const data = await petsApi.getAll()
+        setPets(data)
+      } catch (err) {
+        setError((err as Error).message)
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchPets()
   }, [])
 
   const totalPets = useMemo(() => pets.length, [pets])
 
-  const createPet = useCallback((data: CreatePetDto) => {
-    const newPet: Pet = {
-      id: Date.now().toString(),
-      userId: '1',
-      ...data,
+  const createPet = useCallback(async (data: CreatePetDto) => {
+    try {
+      const newPet = await petsApi.create(data)
+      setPets((prev) => [...prev, newPet])
+    } catch (err) {
+      setError((err as Error).message)
     }
-    setPets((prev) => [...prev, newPet])
   }, [])
 
-  const deletePet = useCallback((id: string) => {
-    setPets((prev) => prev.filter((pet) => pet.id !== id))
+  const deletePet = useCallback(async (id: string) => {
+    try {
+      await petsApi.remove(id)
+      setPets((prev) => prev.filter((pet) => pet.id !== id))
+    } catch (err) {
+      setError((err as Error).message)
+    }
   }, [])
 
   return {
     pets,
     loading,
+    error,
     totalPets,
     createPet,
     deletePet,

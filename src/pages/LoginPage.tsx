@@ -5,6 +5,7 @@ import Input from '../components/shared/Input'
 import Button from '../components/shared/Button'
 import { validateLogin, validateRegister } from '../utils/validators'
 import type { ValidationErrors } from '../utils/validators'
+import { authApi } from '../api/auth.api'
 
 export default function LoginPage() {
   const { login } = useAuthContext()
@@ -17,8 +18,9 @@ export default function LoginPage() {
   const [errors, setErrors] = useState<ValidationErrors>({})
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState('')
+  const [apiError, setApiError] = useState('')
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const validationErrors = isRegister
       ? validateRegister(name, email, password)
       : validateLogin(email, password)
@@ -29,16 +31,22 @@ export default function LoginPage() {
     }
 
     setErrors({})
+    setApiError('')
     setLoading(true)
 
-    setTimeout(() => {
+    try {
+      const result = isRegister
+        ? await authApi.register(name, email, password)
+        : await authApi.login(email, password)
+
       setSuccess(isRegister ? '¡Cuenta creada correctamente!' : '¡Bienvenido de nuevo!')
-      setTimeout(() => {
-        login({ id: '1', name: name || 'Usuario', email }, 'mock-jwt-token')
-        navigate('/dashboard')
-      }, 800)
+      login(result.user, result.token)
+      setTimeout(() => navigate('/dashboard'), 800)
+    } catch (err) {
+      setApiError((err as Error).message)
+    } finally {
       setLoading(false)
-    }, 800)
+    }
   }
 
   return (
@@ -55,6 +63,12 @@ export default function LoginPage() {
         {success && (
           <div className="bg-green-50 border border-green-200 text-green-700 text-sm rounded-lg px-4 py-2 mb-4 text-center">
             {success}
+          </div>
+        )}
+
+        {apiError && (
+          <div className="bg-red-50 border border-red-200 text-red-600 text-sm rounded-lg px-4 py-2 mb-4 text-center">
+            {apiError}
           </div>
         )}
 
@@ -104,6 +118,7 @@ export default function LoginPage() {
               setIsRegister(!isRegister)
               setErrors({})
               setSuccess('')
+              setApiError('')
             }}
           >
             {isRegister ? 'Inicia sesión' : 'Regístrate'}
