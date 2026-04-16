@@ -9,23 +9,32 @@ import Footer from '../components/shared/Footer'
 import Modal from '../components/shared/Modal'
 import Input from '../components/shared/Input'
 import { useState } from 'react'
-import type { CreateVaccineDto, CreateVisitDto, CreateReminderDto } from '../types/pet.types'
+import type { CreateVaccineDto, CreateVisitDto, CreateReminderDto, CreatePetDto } from '../types/pet.types'
 
 type Tab = 'vacunas' | 'visitas' | 'recordatorios'
 
 export default function PetProfilePage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
-  const { pets } = usePets()
+  const { pets, updatePet } = usePets()
   const { vaccines, visits, reminders, loading, addVaccine, addVisit, addReminder } = usePetDetail(id ?? '')
   const [activeTab, setActiveTab] = useState<Tab>('vacunas')
   const [showModal, setShowModal] = useState(false)
+  const [showEditModal, setShowEditModal] = useState(false)
 
   const [vaccineForm, setVaccineForm] = useState<CreateVaccineDto>({ name: '', date: '', nextDate: '' })
   const [visitForm, setVisitForm] = useState<CreateVisitDto>({ date: '', diagnosis: '', medication: '', notes: '' })
   const [reminderForm, setReminderForm] = useState<CreateReminderDto>({ title: '', date: '', type: 'appointment' })
 
   const pet = pets.find((p) => p.id === id)
+
+  const [editForm, setEditForm] = useState<CreatePetDto>({
+    name: pet?.name || '',
+    species: pet?.species || '',
+    breed: pet?.breed || '',
+    birthDate: pet?.birthDate || '',
+    photoUrl: pet?.photoUrl || '',
+  })
 
   const handleAddVaccine = async () => {
     if (!vaccineForm.name || !vaccineForm.date) return
@@ -46,6 +55,23 @@ export default function PetProfilePage() {
     await addReminder(reminderForm)
     setShowModal(false)
     setReminderForm({ title: '', date: '', type: 'appointment' })
+  }
+
+  const handleEditPet = async () => {
+    if (!editForm.name || !editForm.species) return
+    await updatePet(id ?? '', editForm)
+    setShowEditModal(false)
+  }
+
+  const openEditModal = () => {
+    setEditForm({
+      name: pet?.name || '',
+      species: pet?.species || '',
+      breed: pet?.breed || '',
+      birthDate: pet?.birthDate || '',
+      photoUrl: pet?.photoUrl || '',
+    })
+    setShowEditModal(true)
   }
 
   if (!pet && !loading) {
@@ -86,17 +112,25 @@ export default function PetProfilePage() {
         </button>
 
         {pet && (
-          <div className="flex items-center gap-4 mb-6">
-            <img
-              src={pet.photoUrl || 'https://placehold.co/80x80'}
-              alt={pet.name}
-              className="w-20 h-20 rounded-full object-cover border-2 border-amber-200"
-            />
-            <div>
-              <h2 className="text-xl font-semibold text-amber-900">{pet.name}</h2>
-              <p className="text-sm text-amber-700">{pet.species} · {pet.breed}</p>
-              <p className="text-xs text-amber-600 mt-1">Nacimiento: {pet.birthDate}</p>
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-4">
+              <img
+                src={pet.photoUrl || 'https://placehold.co/80x80'}
+                alt={pet.name}
+                className="w-20 h-20 rounded-full object-cover border-2 border-amber-200"
+              />
+              <div>
+                <h2 className="text-xl font-semibold text-amber-900">{pet.name}</h2>
+                <p className="text-sm text-amber-700">{pet.species} · {pet.breed}</p>
+                <p className="text-xs text-amber-600 mt-1">Nacimiento: {pet.birthDate}</p>
+              </div>
             </div>
+            <button
+              onClick={openEditModal}
+              className="px-3 py-1.5 rounded-lg text-sm border border-amber-300 text-amber-700 hover:bg-amber-100 transition-colors"
+            >
+              Editar perfil
+            </button>
           </div>
         )}
 
@@ -137,6 +171,22 @@ export default function PetProfilePage() {
       </div>
 
       <Footer />
+
+      {showEditModal && (
+        <Modal title="Editar perfil de mascota" onClose={() => setShowEditModal(false)}>
+          <div className="flex flex-col gap-4">
+            <Input label="Nombre" name="name" value={editForm.name} onChange={(e) => setEditForm(p => ({ ...p, name: e.target.value }))} />
+            <Input label="Especie" name="species" value={editForm.species} onChange={(e) => setEditForm(p => ({ ...p, species: e.target.value }))} placeholder="Perro, Gato..." />
+            <Input label="Raza" name="breed" value={editForm.breed} onChange={(e) => setEditForm(p => ({ ...p, breed: e.target.value }))} />
+            <Input label="Fecha de nacimiento" name="birthDate" type="date" value={editForm.birthDate} onChange={(e) => setEditForm(p => ({ ...p, birthDate: e.target.value }))} />
+            <Input label="URL de foto" name="photoUrl" value={editForm.photoUrl || ''} onChange={(e) => setEditForm(p => ({ ...p, photoUrl: e.target.value }))} />
+            <div className="flex gap-2 justify-end mt-2">
+              <button onClick={() => setShowEditModal(false)} className="px-4 py-2 rounded-lg text-sm bg-gray-100 text-gray-700 hover:bg-gray-200">Cancelar</button>
+              <button onClick={handleEditPet} className="px-4 py-2 rounded-lg text-sm bg-amber-700 text-white hover:bg-amber-800">Guardar</button>
+            </div>
+          </div>
+        </Modal>
+      )}
 
       {showModal && activeTab === 'vacunas' && (
         <Modal title="Añadir vacuna" onClose={() => setShowModal(false)}>

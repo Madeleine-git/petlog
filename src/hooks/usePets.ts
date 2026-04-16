@@ -41,6 +41,15 @@ export function usePets() {
     }
   }, [])
 
+  const updatePet = useCallback(async (id: string, data: Partial<CreatePetDto>) => {
+    try {
+      const updated = await petsApi.update(id, data)
+      setPets((prev) => prev.map((pet) => pet.id === id ? updated : pet))
+    } catch (err) {
+      setError((err as Error).message)
+    }
+  }, [])
+
   return {
     pets,
     loading,
@@ -48,5 +57,6 @@ export function usePets() {
     totalPets,
     createPet,
     deletePet,
+    updatePet,
   }
 }
