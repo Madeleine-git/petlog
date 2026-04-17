@@ -1,6 +1,8 @@
 import express from 'express'
 import cors from 'cors'
 import helmet from 'helmet'
+import swaggerUi from 'swagger-ui-express'
+import { swaggerSpec } from './config/swagger'
 import authRoutes from './routes/auth.routes'
 import petsRoutes from './routes/pets.routes'
 
@@ -16,22 +18,24 @@ app.use(cors({
 }))
 app.use(express.json())
 
+app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec))
 app.use('/api/auth', authRoutes)
 app.use('/api/pets', petsRoutes)
+
+app.get('/', (_req, res) => {
+  res.status(200).json({
+    name: 'PetLog API',
+    version: '1.0.0',
+    status: 'running',
+    docs: '/api/docs'
+  })
+})
 
 app.get('/api/health', (_req, res) => {
   res.status(200).json({ status: 'ok', message: 'PetLog API funcionando' })
 })
 
-app.get('/', (_req, res) => {
-  res.status(200).json({ 
-    name: 'PetLog API',
-    version: '1.0.0',
-    status: 'running',
-    docs: '/api/health'
-  })
-})
-
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en http://localhost:${PORT}`)
+  console.log(`Documentación Swagger: http://localhost:${PORT}/api/docs`)
 })
