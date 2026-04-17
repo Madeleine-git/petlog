@@ -4,6 +4,7 @@ Aplicación web fullstack para el registro y seguimiento de mascotas. Desarrolla
 
 **Frontend:** https://petlog-sepia.vercel.app
 **API:** https://petlog-api-173h.onrender.com
+**Swagger/Docs:** https://petlog-api-173h.onrender.com/api/docs
 
 ---
 
@@ -20,7 +21,7 @@ PetLog resuelve esto ofreciendo un registro digital organizado, accesible desde 
 | Módulo | Descripción |
 |---|---|
 | Autenticación | Registro y login con email y contraseña. JWT en memoria del cliente, bcrypt en el servidor. |
-| Mascotas | Crear y gestionar múltiples perfiles de mascota por usuario. |
+| Mascotas | Crear, editar y gestionar múltiples perfiles de mascota por usuario. |
 | Vacunas | Registrar vacunas con fecha administrada y próxima dosis. Estado visual al día / pendiente. |
 | Visitas veterinarias | Historial de visitas con diagnóstico, medicación y notas. |
 | Recordatorios | Avisos de citas, medicación periódica y vacunas pendientes. |
@@ -39,6 +40,7 @@ PetLog resuelve esto ofreciendo un registro digital organizado, accesible desde 
 | Autenticación | JWT + bcrypt |
 | Seguridad | Helmet.js + CORS |
 | Persistencia | Datos en memoria (Repository Pattern) |
+| Documentación API | Swagger / OpenAPI 3.0 |
 | Despliegue frontend | Vercel |
 | Despliegue backend | Render |
 
@@ -57,7 +59,7 @@ petlog/
 │   │   └── pets.api.ts            # Funciones tipadas de mascotas
 │   ├── components/                # Componentes reutilizables y por módulo
 │   ├── context/                   # AuthContext — estado global de sesión
-│   ├── hooks/                     # usePets, usePetDetail, useAuth
+│   ├── hooks/                     # usePets, usePetDetail, useAuth, useForm
 │   ├── pages/                     # LoginPage, DashboardPage, PetProfilePage
 │   └── types/                     # Interfaces TypeScript compartidas
 │
@@ -68,7 +70,7 @@ petlog/
         ├── services/              # Capa de servicios — lógica de negocio
         ├── repositories/          # Capa de datos — Repository Pattern
         ├── middleware/            # authMiddleware — verificación JWT
-        └── config/                # Configuración JWT
+        └── config/                # Configuración JWT + Swagger
 ```
 
 ### Flujo de una petición
@@ -111,7 +113,19 @@ Usuario → React Page → API Client (Axios + JWT)
 | GET | /api/pets/:id/reminders | JWT | Listar recordatorios |
 | POST | /api/pets/:id/reminders | JWT | Crear recordatorio |
 
-Documentación completa con ejemplos de request/response en docs/api.md.
+Documentación interactiva disponible en https://petlog-api-173h.onrender.com/api/docs
+
+---
+
+## Bonus implementados
+
+| Funcionalidad | Descripción |
+|---|---|
+| Lazy loading | Páginas cargadas bajo demanda con React.lazy y Suspense |
+| Segundo custom hook | useForm — gestión genérica de formularios con validación |
+| Animaciones | Transiciones en modales y hover en tarjetas de mascotas |
+| Drag & drop | Reordenar mascotas en el dashboard arrastrando las tarjetas |
+| Swagger/OpenAPI | Documentación interactiva de la API en /api/docs |
 
 ---
 
@@ -187,6 +201,7 @@ NODE_ENV=development
 - App móvil con React Native reutilizando la lógica de negocio tipada.
 - Exportar historial médico en PDF.
 - Login con Google (OAuth).
+- Tests automáticos con React Testing Library.
 
 ---
 
