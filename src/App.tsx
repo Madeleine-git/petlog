@@ -1,7 +1,8 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext'
 import { lazy, Suspense } from 'react'
 import ProtectedRoute from './components/shared/ProtectedRoute'
+import { useAuthContext } from './context/AuthContext'
 
 const LoginPage = lazy(() => import('./pages/LoginPage'))
 const DashboardPage = lazy(() => import('./pages/DashboardPage'))
@@ -19,13 +20,22 @@ function LoadingScreen() {
   )
 }
 
+function PublicRoute({ children }: { children: React.ReactNode }) {
+  const { isAuthenticated } = useAuthContext()
+  return isAuthenticated ? <Navigate to="/dashboard" replace /> : <>{children}</>
+}
+
 export default function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
         <Suspense fallback={<LoadingScreen />}>
           <Routes>
-            <Route path="/" element={<LoginPage />} />
+            <Route path="/" element={
+              <PublicRoute>
+                <LoginPage />
+              </PublicRoute>
+            } />
             <Route path="/dashboard" element={
               <ProtectedRoute>
                 <DashboardPage />
