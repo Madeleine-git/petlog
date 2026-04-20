@@ -129,6 +129,23 @@ Documentación interactiva disponible en https://petlog-api-173h.onrender.com/ap
 
 ---
 
+## 🧪 Testing
+
+Puedes probar la aplicación directamente sin necesidad de registrarte usando estas credenciales de prueba:
+
+**URL:** https://petlog-sepia.vercel.app
+
+| Campo | Valor |
+|---|---|
+| Email | test@petlog.com |
+| Contraseña | test123 |
+
+El usuario de prueba tiene dos mascotas precargadas (Coco y Michi) con vacunas, visitas veterinarias y recordatorios de ejemplo listos para explorar.
+
+> Nota: el backend está en Render con plan gratuito. Si la app tarda en responder la primera vez, espera unos 30 segundos mientras el servidor se reactiva.
+
+---
+
 ## Instalación local
 
 ### Requisitos
